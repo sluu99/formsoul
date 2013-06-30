@@ -10,6 +10,7 @@ Example:
   </form>
 </div>
 
+<script src="formsoul.js"></script>
 <script>
   function FormModel() {
     this.name = '';
