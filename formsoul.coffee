@@ -32,7 +32,7 @@ class FormSoul
     # Validate and show errors. Pass in false to disable showign errors
     validate: (showErrors=true) ->
         @errors = @model.validate()
-        showErrors() if showErrors
+        @showErrors() if showErrors
         Object.keys(@errors).length is 0
 
 
@@ -45,3 +45,6 @@ class FormSoul
     gather: () ->
         for own key, elem of @inputElements
             @model[key] = elem.val()
+
+
+window.FormSoul = FormSoul
