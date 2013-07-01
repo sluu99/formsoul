@@ -10,7 +10,7 @@ Example:
   </form>
 </div>
 
-<script src="formsoul.js"></script>
+<script src="formsoul.min.js"></script>
 <script>
   function FormModel() {
     this.name = '';
