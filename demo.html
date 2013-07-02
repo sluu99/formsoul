@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FormSoul Demo</title>
+    </head>
+    <body>
+        <h1>FormSoul Demo</h1>
+        <form id="demoForm" onsubmit="return onSubmit()">
+            <table border="0" width="100%">
+                <tr>
+                    <td valign="top" width="50%">
+                        <h3>Common Elements</h3>
+                        <p>Text: <br><input type="text" fs-field="text"><br><div fs-error="text" style="color:red">&nbsp;</div></p>
+                        <p>Checkbox: <br><input type="checkbox" fs-field="checkbox"></p>
+                        <p>Radio: <br><span style="color:red">Not supported</span><br></p>
+                        <p>Password: <br><input type="password" fs-field="password"></p>
+                        <p>Textarea: <br><textarea fs-field="textarea"></textarea></p>
+                        <p>Select one: <br><select fs-field="selectOne"><option value="one">One</option><option value="2">2</option><option value="3">3</option></select></p>
+                        <p>Select multi: <br><select name="sm" fs-field="selectMulti" multiple><option value="one">One</option><option value="2">2</option><option value="3">3</option><option value="four">Four</option></select></p>
+                    </td>
+                    <td valign="top">
+                        <h3><a href="http://www.w3schools.com/html/html5_form_input_types.asp">HTML5 Elements</a></h3>
+                        <p>Color: <br><input type="color" fs-field="color"</p>
+                        <p>Date: <br><input type="date" fs-field="date"</p>
+                        <p>Datetime: <br><input type="datetime" fs-field="datetime"</p>
+                        <p>Datetime: <br><input type="datetime-local" fs-field="datetimeLocal"</p>
+                        <p>Month: <br><input type="month" fs-field="month"</p>
+                        <p>Number: <br><input type="number" fs-field="num"</p>
+                        <p>Email: <br><input type="email" fs-field="email"</p>
+                        <p>URL: <br><input type="url" fs-field="url"</p>
+                    </td>
+                </tr>
+            </table>
+            <hr/>
+            <input type="submit">
+            <span fs-error="_" style="color:red">&nbsp;</span>
+        </form>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="formsoul.js"></script>
+    <script>
+
+        var fs, model;
+
+        function onSubmit() {
+            fs.gather();
+
+            var str = ''
+            for (var key in model) {
+                if (typeof model[key] === 'function') {
+                    continue;
+                }
+                str += key + ": " + model[key] + "\n";
+            }
+            // alert(str);
+
+            return fs.validate();
+        }
+
+        model = {
+            text: 'Hello world!',
+            checkbox: true,
+            password: 'secret',
+            textarea: 'I don\'t like long paragraphs',
+            selectOne: 2,
+            selectMulti: null,
+            color: null,
+            date: null,
+            datetime: null,
+            datetimeLocal: null,
+            month: null,
+            num: null,
+            email: null,
+            url:null,
+
+            validate: function() {
+                // recommend node-validator for the actual validation; this library can be used on both nodejs an in the browser:
+                // https://github.com/chriso/node-validator
+                return {
+                    // this error belongs to the whole form
+                    '_': 'This is just a demo. You can\'t really submit stuff!',
+
+                    // there can be more than 1 error, first first one will be show
+                    'text': Number(this.text) === 42 ? '' : ['The only acceptable value is 42', 'Nice try!']
+                };
+            }
+        };
+
+        fs = new FormSoul(model, '#demoForm');
+        fs.fill();
+    </script>
+    </body>
+</html>
