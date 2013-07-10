@@ -5,8 +5,14 @@ class FormSoul
     # elem: the DOM element
     @genericVal = (elem) ->
         (val) -> if val? then elem.val(val) else elem.val()
-    @checkbox = (elem) ->
+    @checkboxVal = (elem) ->
         (val) -> if val? then elem.prop('checked', val) else elem.prop('checked')
+    @staticVal = (elem) ->
+        htmlAttr = elem.attr('fs-html')
+        if htmlAttr? and htmlAttr.toLowerCase() is 'true'
+            (html) -> if html? then elem.html(html) else elem.html()
+        else
+            (text) -> if text? then elem.text(text) else elem.text()
 
     #
     # Class constructor
@@ -25,30 +31,38 @@ class FormSoul
                 @inputElements[key] = $(elem)
                 errorElem = container.find('[fs-error='+key+']:first')[0]
                 @errorElements[key] = $(errorElem) if errorElem?
-
-                # get data function based on element type
-                switch $(elem).prop('type')
-                    when 'checkbox' then @funcs[key] = FormSoul.checkbox($(elem))
-                    when 'radio' then throw 'Radio inputs are not supported'
-                    else @funcs[key] = FormSoul.genericVal($(elem))
+                @chooseValFunction(key, @inputElements[key])
 
         # special error element
         formErrorElem = container.find('[fs-error=_]:first')[0]
         @errorElements['_'] = $(formErrorElem) if formErrorElem?
 
 
+
+    #
+    # set data function based on element type
+    chooseValFunction: (key, elem) ->
+        tagName = elem.prop('tagName')
+
+        switch tagName
+            when 'DIV','SPAN','P' then @funcs[key] = FormSoul.staticVal(elem)
+            when 'INPUT','TEXTAREA','SELECT'
+                type = elem.prop('type')
+                switch type
+                    when 'checkbox' then @funcs[key] = FormSoul.checkboxVal(elem)
+                    when 'radio' then throw 'Radio inputs are not supported'
+                    else @funcs[key] = FormSoul.genericVal(elem)
+            else throw tagName + ' is not supported'
+
+
+
     #
     # Returns true if the form has any validation error. Call formsoul.validate()
     # before calling this function
     hasErrors: () ->
-        if not @errors?
-            true
-        else
-            hasError = false
-            for own key of @errors
-                hasError = true
-                break
-            hasError
+        for own key of @errors
+            return true
+        return false
 
 
 
@@ -74,6 +88,7 @@ class FormSoul
                 inputElem.removeClass('fs-error') if inputElem?
 
 
+
     #
     # Validate and show errors. Pass in false to disable showign errors
     validate: (showErrors=true) ->
@@ -87,6 +102,8 @@ class FormSoul
     fill: () ->
         for own key, func of @funcs
             func(@model[key])
+
+
 
     #
     # Gather the field values into the model
